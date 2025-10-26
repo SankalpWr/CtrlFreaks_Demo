@@ -1,0 +1,32 @@
+pipeline {
+  agent any
+  options {
+    skipDefaultCheckout(true)
+    timestamps()
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+    stage('Build') {
+      steps {
+        sh 'chmod +x build.sh && ./build.sh'
+      }
+    }
+    stage('Test') {
+      steps {
+        sh 'chmod +x tests/run_tests.sh && ./tests/run_tests.sh'
+      }
+    }
+  }
+  post {
+    always {
+      archiveArtifacts artifacts: 'dist/**', allowEmptyArchive: true
+    }
+    success {
+      echo 'Pipeline completed successfully.'
+    }
+  }
+}
